@@ -6,7 +6,7 @@ ifeq ($(wildcard $(CONFIG_FILE)),)
 	CONFIG_EXISTS=0
 else
 	CONFIG_EXISTS=1
-    include $(CONFIG_FILE)
+	include $(CONFIG_FILE)
 endif
 
 # Meta info
