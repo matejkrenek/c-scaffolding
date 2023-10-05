@@ -39,6 +39,7 @@ SRC_DIR=./src
 BUILD_DIR=./build
 ASSETS_DIR=./assets
 TOOLS_DIR=./tools
+STUBS_DIR=./stubs
 
 # Compiler setup
 CC=cc
@@ -103,3 +104,13 @@ init:
 	else \
 		echo "\n$(BLUE)Config file '$(CONFIG_FILE)' exists.$(NC)\n"; \
 	fi
+
+generate.header:
+	@for file in $(SRC_FILES); do \
+        if ! grep -q '/\*\*' $$file; then \
+			filename=$$(basename $$file); \
+			current_date=$$(stat -c '%y' $$file | awk '{split($$1,a,"-"); print a[1]"-"a[3]"-"a[2]}'); \
+        	header_with_author_and_filename=$$(echo '$(shell cat $(STUBS_DIR)/header.stub)' | sed 's/{{author}}/$(AUTHOR)/' | sed "s/{{filename}}/$$filename/" | sed "s/{{description}}/-/" | sed "s/{{date}}/$$current_date/" | sed "s/{{year}}/$(YEAR)/"); \
+            echo "$$header_with_author_and_filename" | cat - $$file > $$file.tmp && mv $$file.tmp $$file; \
+        fi; \
+    done
