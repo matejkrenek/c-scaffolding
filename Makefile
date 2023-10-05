@@ -1,7 +1,16 @@
-# Information about author and project
-PROJECT=C Scaffolding structure
-AUTHOR=Matěj Křenek <xkrenem00@stud.fit.vutbr.cz>
-YEAR=2023
+# Include configuration file 
+CONFIG_FILE=project.cfg
+CONFIG_EXISTS=0
+
+ifeq ($(wildcard $(CONFIG_FILE)),)
+	CONFIG_EXISTS=0
+else
+	CONFIG_EXISTS=1
+    include $(CONFIG_FILE)
+endif
+
+# Meta info
+YEAR := $(shell date +%Y)
 
 # ANSI color codes
 BLACK=\033[0;30m
@@ -37,29 +46,32 @@ INCLUDES=-I$(SRC_DIR)
 ENTRY_FILE=main
 SRC_FILES := $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/*.h)
 
-
 all: compile run
 
 compile:
+	@clear
 	@echo "$(YELLOW)Compiling program...$(NC)\n"
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(SRC_DIR)/$(ENTRY_FILE).c -o $(BUILD_DIR)/$(ENTRY_FILE) $(CFLAGS) $(INCLUDES)
 	@echo "\n"
 
 run:
+	@clear
 	@echo "$(YELLOW)Running program...$(NC)\n"
 	@cd $(BUILD_DIR) && ./$(ENTRY_FILE)
 
 help:
 	@clear
-	@echo "Project: $(GRAY)$(PROJECT)$(NC) \t Author: $(GRAY)$(AUTHOR)$(NC) \t Year: $(GRAY)$(YEAR)$(NC)\n"
+	@echo "Project: $(GRAY)$(NAME)$(NC) \t Author: $(GRAY)$(AUTHOR)$(NC) \t Year: $(GRAY)$(YEAR)$(NC)"
+	@echo "\n$(GRAY)$(DESCRIPTION)$(NC)\n"
 	@echo "Usage: make $(GREEN)<command>$(NC) [ARGUMENT1=valuue1] [ARGUMENT2=value2] [...]\n"
 	@echo "Commands:\n"
 
 	@echo " $(GREEN)help$(NC) \t\t # Show this help messsage"
-	@echo "\t\t # Multiple lines are supported true"
-	@echo "\t\t # When its first, both commands works"
 	@echo "\t\t # $(BLUE)\`make help\`$(NC)\n"
+
+	@echo " $(GREEN)init$(NC) \t\t # Create $(GRAY)'$(CONFIG_FILE)'$(NC) file"
+	@echo "\t\t # $(BLUE)\`make init\`$(NC)\n"
 
 	@echo " $(GREEN)compile$(NC) \t # Compile the program"
 	@echo "\t\t # $(BLUE)\`make compile\`$(NC)\n"
@@ -70,3 +82,15 @@ help:
 	@echo " $(GREEN)all$(NC) \t\t # Compile and run the program"
 	@echo "\t\t # $(BLUE)\`make\`$(NC)"
 	@echo "\t\t # $(BLUE)\`make all\`$(NC)\n"
+
+init:
+	@clear
+	@if [ ! -e $(CONFIG_FILE) ]; then \
+		echo "NAME=\"Name of project\"" >> $(CONFIG_FILE); \
+		echo "AUTHOR=\"Author name \<author@email.com\>\"" >> $(CONFIG_FILE); \
+		echo "DESCRIPTION=\"\"" >> $(CONFIG_FILE); \
+		echo "GIT_REPO=\"https://github.com\"" >> $(CONFIG_FILE); \
+		echo "\n$(GREEN)Config file '$(CONFIG_FILE)' created.$(NC)\n"; \
+	else \
+		echo "\n$(BLUE)Config file '$(CONFIG_FILE)' exists.$(NC)\n"; \
+	fi
