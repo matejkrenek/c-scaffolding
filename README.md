@@ -66,6 +66,7 @@ Now when all necessary tools are downloaded you can run the toolchain on your ma
   | Command   | Functionality                                                          |
   | --------- | ---------------------------------------------------------------------- |
   | "help"    | Show all the informations about project and what commands you can use  |
+  | "init"    | Create project configuratin file                                       |
   | "compile" | Compile your C program                                                 |
   | "run"     | Run your compiled C program                                            |
   | "", "all" | Compile and run your C program                                         |
