@@ -1,13 +1,13 @@
 # Include configuration file 
 CONFIG_FILE=project.cfg
-CONFIG_EXISTS=0
 
-ifeq ($(wildcard $(CONFIG_FILE)),)
-	CONFIG_EXISTS=0
-else
-	CONFIG_EXISTS=1
-	include $(CONFIG_FILE)
-endif
+-include $(CONFIG_FILE)
+
+CONFIG_CONTENT := \
+NAME="Name of project" \
+AUTHOR="Author name <author@email.com>" \
+DESCRIPTION="" \
+GIT_REPO="https://github.com"
 
 # Meta info
 YEAR := $(shell date +%Y)
@@ -38,6 +38,7 @@ NC=\033[0m
 SRC_DIR=./src
 BUILD_DIR=./build
 ASSETS_DIR=./assets
+TOOLS_DIR=./tools
 
 # Compiler setup
 CC=cc
@@ -46,10 +47,17 @@ INCLUDES=-I$(SRC_DIR)
 ENTRY_FILE=main
 SRC_FILES := $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/*.h)
 
+define display_joke
+	@echo "$(BOLD)Joke by ChatGPT: $(NC)$(GRAY)"
+	@bash $(TOOLS_DIR)/random_joke
+	@echo "$(NC)"
+endef
+
 all: compile run
 
 compile:
 	@clear
+	$(call display_joke)
 	@echo "$(YELLOW)Compiling program...$(NC)\n"
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(SRC_DIR)/$(ENTRY_FILE).c -o $(BUILD_DIR)/$(ENTRY_FILE) $(CFLAGS) $(INCLUDES)
@@ -57,11 +65,13 @@ compile:
 
 run:
 	@clear
+	$(call display_joke)
 	@echo "$(YELLOW)Running program...$(NC)\n"
 	@cd $(BUILD_DIR) && ./$(ENTRY_FILE)
 
 help:
 	@clear
+	$(call display_joke)
 	@echo "Project: $(GRAY)$(NAME)$(NC) \t Author: $(GRAY)$(AUTHOR)$(NC) \t Year: $(GRAY)$(YEAR)$(NC)"
 	@echo "\n$(GRAY)$(DESCRIPTION)$(NC)\n"
 	@echo "Usage: make $(GREEN)<command>$(NC) [ARGUMENT1=valuue1] [ARGUMENT2=value2] [...]\n"
@@ -86,11 +96,10 @@ help:
 init:
 	@clear
 	@if [ ! -e $(CONFIG_FILE) ]; then \
-		echo "NAME=\"Name of project\"" >> $(CONFIG_FILE); \
-		echo "AUTHOR=\"Author name \<author@email.com\>\"" >> $(CONFIG_FILE); \
-		echo "DESCRIPTION=\"\"" >> $(CONFIG_FILE); \
-		echo "GIT_REPO=\"https://github.com\"" >> $(CONFIG_FILE); \
 		echo "\n$(GREEN)Config file '$(CONFIG_FILE)' created.$(NC)\n"; \
+		for line in $(CONFIG_CONTENT); do \
+			echo "$$line" >> $(CONFIG_FILE); \
+		done \
 	else \
 		echo "\n$(BLUE)Config file '$(CONFIG_FILE)' exists.$(NC)\n"; \
 	fi
