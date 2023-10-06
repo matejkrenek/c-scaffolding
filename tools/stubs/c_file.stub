@@ -1,0 +1,19 @@
+/**\n
+***********************************************************************************\n
+* @file {{filename}}\n
+* @author {{author}}\n
+* @brief {{description}}\n
+* @date {{date}}\n
+*\n
+* @copyright Copyright (c) {{year}}\n
+***********************************************************************************\n
+*/\n
+\n/* Includes ------------------------------------------------------------------------*/
+\n#include "stdio.h"
+\n
+\nint {{c_file_name}}(void)
+\n{\n
+\tprintf("Hello {{c_file_name}}");
+\n\n
+\treturn 0;
+\n}

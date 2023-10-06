@@ -36,17 +36,18 @@ NC=\033[0m
 
 # Folders setup
 SRC_DIR=./src
-BUILD_DIR=./build
+BUILD_DIR=./.build
 ASSETS_DIR=./assets
 TOOLS_DIR=./tools
-STUBS_DIR=./stubs
+STUBS_DIR=./tools/stubs
 
 # Compiler setup
 CC=cc
 CFLAGS=-std=c99 -Wall -Werror -g
-INCLUDES=-I$(SRC_DIR)
 ENTRY_FILE=main
-SRC_FILES := $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/*.h)
+SRC_FILES:=$(wildcard $(SRC_DIR)/**/*.c) $(wildcard $(SRC_DIR)/**/*.h) $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/*.h)
+INCLUDES:=-I$(SRC_DIR)
+ENTRY_FILES:=$(wildcard $(SRC_DIR)/**/*.c) $(wildcard $(SRC_DIR)/*.c)
 
 define display_joke
 	@echo "$(BOLD)Joke by ChatGPT: $(NC)$(GRAY)"
@@ -61,7 +62,7 @@ compile:
 	$(call display_joke)
 	@echo "$(YELLOW)Compiling program...$(NC)\n"
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(SRC_DIR)/$(ENTRY_FILE).c -o $(BUILD_DIR)/$(ENTRY_FILE) $(CFLAGS) $(INCLUDES)
+	$(CC) $(ENTRY_FILES) -o $(BUILD_DIR)/$(ENTRY_FILE) $(CFLAGS) $(INCLUDES)
 	@echo "\n"
 
 run:
@@ -105,12 +106,53 @@ init:
 		echo "\n$(BLUE)Config file '$(CONFIG_FILE)' exists.$(NC)\n"; \
 	fi
 
+# Generators to generate code snippets on more
 generate.header:
+	@clear
+	$(call display_joke)
+	@echo "$(YELLOW)Generate header comments...$(NC)\n"
 	@for file in $(SRC_FILES); do \
+		filename=$$(basename $$file); \
         if ! grep -q '/\*\*' $$file; then \
-			filename=$$(basename $$file); \
 			current_date=$$(stat -c '%y' $$file | awk '{split($$1,a,"-"); print a[1]"-"a[3]"-"a[2]}'); \
         	header_with_author_and_filename=$$(echo '$(shell cat $(STUBS_DIR)/header.stub)' | sed 's/{{author}}/$(AUTHOR)/' | sed "s/{{filename}}/$$filename/" | sed "s/{{description}}/-/" | sed "s/{{date}}/$$current_date/" | sed "s/{{year}}/$(YEAR)/"); \
             echo "$$header_with_author_and_filename" | cat - $$file > $$file.tmp && mv $$file.tmp $$file; \
-        fi; \
-    done
+			echo "$(GREEN)Header comment was added to $(UNDERLINE)\`$$filename\`$(NC)\n"; \
+        else \
+			echo "$(BLUE)File $(UNDERLINE)\`$$filename\`$(BLUE) already contains header comment.$(NC)\n"; \
+		fi; \
+	done
+
+# TODO: generate c_file by passing two params
+# TODO: @param C_FILE_NAME - name of the file
+# TODO: @param C_FILE_DIR - path to the directory where will be the file stored (default: SRC_FOLDER)
+C_FILE_NAME?=
+C_FILE_DIR?=$(SRC_DIR)
+
+generate.c_file:
+ifeq ($(strip $(C_FILE_NAME)),)
+	@echo "\n$(RED)$(ITALIC)C_FILE_NAME$(RED) parameter is required.$(NC)\n"
+else
+ifeq ($(wildcard $(C_FILE_DIR)),)
+	@echo "\n$(RED)$(ITALIC)C_FILE_DIR$(RED) $(C_FILE_DIR) does not exist.$(NC)\n"
+else
+	@if [ -e $(C_FILE_DIR)/$(C_FILE_NAME).c ]; then \
+		echo "file already exists"; \
+	else \
+		echo "$$(echo '$(shell cat $(STUBS_DIR)/c_file.stub)' | sed 's/{{author}}/$(AUTHOR)/' | sed "s/{{filename}}/$(C_FILE_NAME).c/" | sed "s/{{c_file_name}}/$(C_FILE_NAME)/" | sed "s/{{description}}/-/")" > $(C_FILE_DIR)/$(C_FILE_NAME).c; \
+	fi
+endif
+endif
+	
+
+# TODO: generate h_file by passing two params
+# TODO: @param H_FILE_NAME - name of the file
+# TODO: @param H_FILE_DIR - path to the directory where will be the file stored (default: SRC_FOLDER)
+generate.h_file:
+	@echo "h_file"
+
+# TODO: generate module by passing two params
+# TODO: @param MODULE_NAME - name of the module
+# TODO: @param MODULE_DIR - path to the directory where will be the module stored (default to: SRC_FOLDER)
+generate.module:
+	@echo "h_file"

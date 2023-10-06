@@ -3,21 +3,20 @@
  * @file main.c
  * @author Matěj Křenek <xkrenem00@stud.fit.vutbr.cz>
  * @brief -
- * @date 2023-05-10
+ * @date 2023-06-10
  *
  * @copyright Copyright (c) 2023
  ***********************************************************************************
  */
 
-/* Includes ------------------------------------------------------------------------*/
-#include "stdio.h"
+#include <stdio.h>
+#include "logger/logger.h"
 
-/* Macros --------------------------------------------------------------------------*/
 #define len(arr) sizeof(arr) / sizeof(arr[0])
 
 int main(void)
 {
-    printf("Hello World\n");
+    logger_init(LOG_DEBUG);
 
     return 0;
 }
