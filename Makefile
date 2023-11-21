@@ -53,17 +53,10 @@ ENTRY_FILES:=$(wildcard $(SRC_DIR)/**/*.c) $(wildcard $(SRC_DIR)/*.c)
 VALGRIND=valgrind
 LTRACE=ltrace
 
-define display_joke
-	@echo "$(BOLD)Joke by ChatGPT: $(NC)$(GRAY)"
-	@bash $(TOOLS_DIR)/random_joke
-	@echo "$(NC)"
-endef
-
 all: compile run
 
 compile:
 	@clear
-	$(call display_joke)
 	@echo "$(YELLOW)Compiling program...$(NC)\n"
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(ENTRY_FILES) -o $(BUILD_DIR)/$(ENTRY_FILE) $(CFLAGS) $(INCLUDES)
@@ -71,13 +64,11 @@ compile:
 
 run:
 	@clear
-	$(call display_joke)
 	@echo "$(YELLOW)Running program...$(NC)\n"
 	@cd $(BUILD_DIR) && ./$(ENTRY_FILE)
 
 help:
 	@clear
-	$(call display_joke)
 	@echo "Project: $(GRAY)$(NAME)$(NC) \t Author: $(GRAY)$(AUTHOR)$(NC) \t Year: $(GRAY)$(YEAR)$(NC)"
 	@echo "\n$(GRAY)$(DESCRIPTION)$(NC)\n"
 	@echo "Usage: make $(GREEN)<command>$(NC) [ARGUMENT1=valuue1] [ARGUMENT2=value2] [...]\n"
@@ -113,7 +104,6 @@ init:
 # Generators to generate code snippets on more
 generate.header:
 	@clear
-	$(call display_joke)
 	@echo "$(YELLOW)Generate header comments...$(NC)\n"
 	@for file in $(SRC_FILES); do \
 		filename=$$(basename $$file); \
