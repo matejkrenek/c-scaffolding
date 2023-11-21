@@ -28,8 +28,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": false,
-      "cwd": "/home/matejkrenek/fitvut/IZP/projects/logger/tests",
-      "program": "/home/matejkrenek/fitvut/IZP/projects/logger/tests/build/Debug/outDebug",
+      "cwd": "/home/matejkrenek/fitvut/c-scaffolding/src",
+      "program": "/home/matejkrenek/fitvut/c-scaffolding/src/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

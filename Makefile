@@ -49,6 +49,10 @@ SRC_FILES:=$(wildcard $(SRC_DIR)/**/*.c) $(wildcard $(SRC_DIR)/**/*.h) $(wildcar
 INCLUDES:=-I$(SRC_DIR)
 ENTRY_FILES:=$(wildcard $(SRC_DIR)/**/*.c) $(wildcard $(SRC_DIR)/*.c)
 
+# Debugging
+VALGRIND=valgrind
+LTRACE=ltrace
+
 define display_joke
 	@echo "$(BOLD)Joke by ChatGPT: $(NC)$(GRAY)"
 	@bash $(TOOLS_DIR)/random_joke
@@ -123,36 +127,8 @@ generate.header:
 		fi; \
 	done
 
-# TODO: generate c_file by passing two params
-# TODO: @param C_FILE_NAME - name of the file
-# TODO: @param C_FILE_DIR - path to the directory where will be the file stored (default: SRC_FOLDER)
-C_FILE_NAME?=
-C_FILE_DIR?=$(SRC_DIR)
+valgrind:
+	$(VALGRIND) ./$(BUILD_DIR)/$(ENTRY_FILE) $(ARGS)
 
-generate.c_file:
-ifeq ($(strip $(C_FILE_NAME)),)
-	@echo "\n$(RED)$(ITALIC)C_FILE_NAME$(RED) parameter is required.$(NC)\n"
-else
-ifeq ($(wildcard $(C_FILE_DIR)),)
-	@echo "\n$(RED)$(ITALIC)C_FILE_DIR$(RED) $(C_FILE_DIR) does not exist.$(NC)\n"
-else
-	@if [ -e $(C_FILE_DIR)/$(C_FILE_NAME).c ]; then \
-		echo "file already exists"; \
-	else \
-		echo "$$(echo '$(shell cat $(STUBS_DIR)/c_file.stub)' | sed 's/{{author}}/$(AUTHOR)/' | sed "s/{{filename}}/$(C_FILE_NAME).c/" | sed "s/{{c_file_name}}/$(C_FILE_NAME)/" | sed "s/{{description}}/-/")" > $(C_FILE_DIR)/$(C_FILE_NAME).c; \
-	fi
-endif
-endif
-	
-
-# TODO: generate h_file by passing two params
-# TODO: @param H_FILE_NAME - name of the file
-# TODO: @param H_FILE_DIR - path to the directory where will be the file stored (default: SRC_FOLDER)
-generate.h_file:
-	@echo "h_file"
-
-# TODO: generate module by passing two params
-# TODO: @param MODULE_NAME - name of the module
-# TODO: @param MODULE_DIR - path to the directory where will be the module stored (default to: SRC_FOLDER)
-generate.module:
-	@echo "h_file"
+ltrace:
+	$(LTRACE) ./$(BUILD_DIR)/$(ENTRY_FILE) $(ARGS)
